@@ -199,7 +199,6 @@ static int svcd_init( lua_State *L )
 
 static int svcd_ndispatch( lua_State *L )
 {
-    printf("%s\n", "hello");
     // Checks to make sure it is passed 3 parameters
     if (lua_gettop(L) != 3) return luaL_error(L, "Expected (pay, srcip, srcport)"); 
 
@@ -209,7 +208,9 @@ static int svcd_ndispatch( lua_State *L )
     lua_getglobal(L, "SVCD"); // gets table
     lua_pushstring(L, "oursubs"); // use oursubs as the key
     lua_gettable(L, 5);
-    lua_pushnumber(L, ivkid);
+    char ivkidstr[16];
+    sprintf(ivkidstr, "%d", ivkid);
+    lua_pushstring(L, ivkidstr);
     lua_gettable(L, 6);
 
     size_t size = lua_objlen(L, 6);
