@@ -203,10 +203,6 @@ static int svcd_ndispatch( lua_State *L )
     // Checks to make sure it is passed 3 parameters
     if (lua_gettop(L) != 3) return luaL_error(L, "Expected (pay, srcip, srcport)"); 
 
-    // Get first parameter
-    // char pay[8]; 
-    // copy the first parameter to pay variable
-    // lua_checkstring(L, 1); // checks to make sure pay is a string
     size_t parlen = lua_objlen(L, -1);
     const char* pay = lua_tolstring(L, -1, &parlen); 
     uint16_t ivkid = lua_tonumber(L, -1); // changes pay parameter to number and returns
@@ -218,8 +214,7 @@ static int svcd_ndispatch( lua_State *L )
 
     size_t size = lua_objlen(L, 6);
     const char* item = lua_tolstring(L, 6, &size);
-    // const char* subs = lua_tolstring(L, 5, &size); // gets the entire array oursubs as a string
-    if (!lua_isnil(L, 6)) {//  && subs[ivkid] == nil like don't i need to check whether the particular elemnt ins null? do i do  && string is longer than ivkid
+    if (!lua_isnil(L, 6)) {
 	char newstr[3];
 	strncpy(newstr, pay, 3);
         lua_pushstring(L, item);
@@ -227,12 +222,5 @@ static int svcd_ndispatch( lua_State *L )
         lua_call(L, 1, 0);
         // item(newstr);
     }
-    // PUSH copied result IT BACK ON STACK??
-    // what does the construct [] () even mean i cant find it online
-//if SVCD.oursubs[ivkid] ~= nil then
- //       SVCD.oursubs[ivkid](string.sub(pay,3))
-
-	#if 0
-    #endif
     return 0;
 }
