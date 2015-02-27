@@ -4,7 +4,6 @@
 #define SVCD_SYMBOLS \
     { LSTRKEY( "svcd_init"), LFUNCVAL ( svcd_init ) },
 
-
 //If this file is defining only specific functions, or if it
 //is defining the whole thing
 #define SVCD_PUREC 0
@@ -15,6 +14,8 @@
 // advert_received, which you may want to hook into
 #define MIN_OPT_LEVEL 2
 #include "lrodefs.h"
+#include <stdint.h>
+#include <inttypes.h>
 static const LUA_REG_TYPE svcd_meta_map[] =
 {
     { LSTRKEY( "__index" ), LROVAL ( svcd_meta_map ) },
@@ -30,6 +31,7 @@ static const LUA_REG_TYPE svcd_meta_map[] =
 // Maintainer: Michael Andersen <michael@steelcode.com>
 /////////////////////////////////////////////////////////////
 
+static int svcd_ndispatch( lua_State *L );
 // The anonymous func in init that allows for dynamic binding of advert_received
 static int svcd_init_adv_received( lua_State *L )
 {
@@ -93,8 +95,13 @@ static int svcd_init( lua_State *L )
     lua_getglobal(L, "SVCD");
     printf("Put table at %d\n", lua_gettop(L));
 #endif
-    //Now begins the part that corresponds with the lua init function
+    
+    //Override symbols in the lua table with C implementation
+    lua_pushstring(L, "ndispatch");
+    lua_pushlightfunction(L, svcd_ndispatch);
+    lua_settable(L, 3); 
 
+    //Now begins the part that corresponds with the lua init function
     //SVCD.asock
     lua_pushstring(L, "asock");
     lua_pushlightfunction(L, libstorm_net_udpsocket);
@@ -183,5 +190,49 @@ static int svcd_init( lua_State *L )
         lua_call(L, 3, 0);
     }
 
+    
+    return 0;
+}
+
+// Lua: storm.n.ndispatch ( pay, srcip, srcport )
+// Dispatches an incoming notification
+
+static int svcd_ndispatch( lua_State *L )
+{
+    printf("%s\n", "hello");
+    // Checks to make sure it is passed 3 parameters
+    if (lua_gettop(L) != 3) return luaL_error(L, "Expected (pay, srcip, srcport)"); 
+
+    // Get first parameter
+    // char pay[8]; 
+    // copy the first parameter to pay variable
+    // lua_checkstring(L, 1); // checks to make sure pay is a string
+    size_t parlen = lua_objlen(L, -1);
+    const char* pay = lua_tolstring(L, -1, &parlen); 
+    uint16_t ivkid = lua_tonumber(L, -1); // changes pay parameter to number and returns
+    lua_getglobal(L, "SVCD"); // gets table
+    lua_pushstring(L, "oursubs"); // use oursubs as the key
+    lua_gettable(L, 5);
+    lua_pushnumber(L, ivkid);
+    lua_gettable(L, 6);
+
+    size_t size = lua_objlen(L, 6);
+    const char* item = lua_tolstring(L, 6, &size);
+    // const char* subs = lua_tolstring(L, 5, &size); // gets the entire array oursubs as a string
+    if (!lua_isnil(L, 6)) {//  && subs[ivkid] == nil like don't i need to check whether the particular elemnt ins null? do i do  && string is longer than ivkid
+	char newstr[3];
+	strncpy(newstr, pay, 3);
+        lua_pushstring(L, item);
+        lua_pushstring(L, newstr); // pay
+        lua_call(L, 1, 0);
+        // item(newstr);
+    }
+    // PUSH copied result IT BACK ON STACK??
+    // what does the construct [] () even mean i cant find it online
+//if SVCD.oursubs[ivkid] ~= nil then
+ //       SVCD.oursubs[ivkid](string.sub(pay,3))
+
+	#if 0
+    #endif
     return 0;
 }
