@@ -202,7 +202,7 @@ static int svcd_ndispatch( lua_State *L )
     // Checks to make sure it is passed 3 parameters
     if (lua_gettop(L) != 3) return luaL_error(L, "Expected (pay, srcip, srcport)"); 
 
-    size_t parlen = lua_objlen(L, -1);
+    size_t parlen;
     const char* pay = lua_tolstring(L, -1, &parlen); 
     uint16_t ivkid = lua_tonumber(L, -1); // changes pay parameter to number and returns
     lua_getglobal(L, "SVCD"); // gets table
@@ -213,9 +213,9 @@ static int svcd_ndispatch( lua_State *L )
     lua_pushstring(L, ivkidstr);
     lua_gettable(L, 6);
 
-    size_t size = lua_objlen(L, 6);
+    size_t size;
     const char* item = lua_tolstring(L, 6, &size);
-    if (!lua_isnil(L, 6)) {
+    if (!lua_isnil(L, 7)) {
 	char newstr[3];
 	strncpy(newstr, pay, 3);
         lua_pushstring(L, item);
