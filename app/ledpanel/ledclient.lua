@@ -8,7 +8,7 @@ require "svcd"
 flashers = {}
 
 cord.new(function()
-    cord.await(SVCD.init, "ledclient")
+    cord.await(storm.n.svcd_init, "ledclient")
     SVCD.advert_received = function(pay, srcip, srcport)
         local adv = storm.mp.unpack(pay)
         for k,v in pairs(adv) do
