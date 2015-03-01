@@ -207,18 +207,18 @@ static int svcd_ndispatch( lua_State *L )
     uint16_t ivkid = lua_tonumber(L, -1); // changes pay parameter to number and returns
     lua_getglobal(L, "SVCD"); // gets table
     lua_pushstring(L, "oursubs"); // use oursubs as the key
-    lua_gettable(L, 5);
+    lua_gettable(L, 4);
     char ivkidstr[16];
     sprintf(ivkidstr, "%d", ivkid);
     lua_pushstring(L, ivkidstr);
-    lua_gettable(L, 6);
+    lua_gettable(L, 5);
 
     size_t size;
     const char* item = lua_tolstring(L, 6, &size);
-    if (!lua_isnil(L, 7)) {
+    if (!lua_isnil(L, 5)) {
 	char newstr[3];
-	strncpy(newstr, pay, 3);
-        lua_pushstring(L, item);
+	strncpy(newstr, pay + 3, parlen - 3); // gets from 3rd character to end of string
+	lua_pushstring(L, item);
         lua_pushstring(L, newstr); // pay
         lua_call(L, 1, 0);
         // item(newstr);
