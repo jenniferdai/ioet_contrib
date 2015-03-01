@@ -2,7 +2,9 @@
 
 
 #define SVCD_SYMBOLS \
-    { LSTRKEY( "svcd_init"), LFUNCVAL ( svcd_init ) },
+    { LSTRKEY( "svcd_init"), LFUNCVAL ( svcd_init ) \ 
+    { LSTRKEY( "svcd_write"), LFUNCVAL ( svcd_write )},
+    
 
 //If this file is defining only specific functions, or if it
 //is defining the whole thing
@@ -194,8 +196,10 @@ static int svcd_init( lua_State *L )
     return 0;
 }
 
-// Lua: storm.n.ndispatch ( pay, srcip, srcport )
-// Dispatches an incoming notification
+//////////////////////////////////////////////////////////////////////////////
+// SVCD.ndispatch((string pay, number srcip, number srcport)) 
+// Authors: Jennifer Dai, Prashan Dharmasena, Wenqin 
+/////////////////////////////////////////////////////////////
 
 static int svcd_ndispatch( lua_State *L )
 {
@@ -221,7 +225,6 @@ static int svcd_ndispatch( lua_State *L )
 	lua_pushstring(L, item);
         lua_pushstring(L, newstr); // pay
         lua_call(L, 1, 0);
-        // item(newstr);
     }
     return 0;
 }
